@@ -19,15 +19,17 @@ def addOneToPathHelper(pathDistResult, newIndex):
 
 class OOT_Locations_Graph:
 
-	def __init__(self, decoupled, defaultStarts, defaultSongs):
+	def __init__(self, decoupled = False, defaultStarts = True, defaultSongs = True, autoSave = True):
 		self.isDecoupled = decoupled
 		self.isDefaultStartPoints = defaultStarts
 		self.isDefaultSongs = defaultSongs
+		self.isAutosaveOn = autoSave
+		self.reminderList = []
 
 		self.entrances_locations_dictionary = {
 		'Kokiri_To_Useless_Kokiri_House_By_Sword':'Kokiri_Forest', 'Kokiri_To_Useless_Kokiri_House_By_Links_House': 'Kokiri_Forest', 'Kokiri_To_Useless_Kokiri_House_By_Shop': 'Kokiri_Forest',
 		'Kokiri_To_Link_House':'Kokiri_Forest', 'Kokiri_To_Kokiri_Shop':'Kokiri_Forest', 'Kokiri_To_Midos_House':'Kokiri_Forest',
-			'Kokiri_To_SoS_Grotto':'Kokiri_Forest', 'Kokiri_To_Deku_Tree':'Kokiri_Forest', 'Kokiri_To_Ocarina_Bridge':'Kokiri_Forest', 'Kokiri_To_Lost_Woods':'Kokiri_Forest',
+		'Kokiri_To_SoS_Grotto':'Kokiri_Forest', 'Kokiri_To_Deku_Tree':'Kokiri_Forest', 'Kokiri_To_Ocarina_Bridge':'Kokiri_Forest', 'Kokiri_To_Lost_Woods_Main':'Kokiri_Forest',
 
 		'Lost_Woods_To_Kokiri_And_Lost':'Lost_Woods', 'Lost_Woods_Bridge_To_Kokiri':'Lost_Woods', 'Lost_Woods_Bridge_To_Hyrule_Field':'Lost_Woods',
 		'Lost_Woods_To_Sacred_Forest_Meadow' : 'Lost_Woods', 'Lost_Woods_To_Goron_City':'Lost_Woods',  'Lost_Woods_To_Zoras_River':'Lost_Woods',
@@ -200,6 +202,15 @@ class OOT_Locations_Graph:
 		self.string_to_ID_dictionary['Become_Child'] = -11
 		self.ID_to_string_dictionary[-11] = 'Become_Child'
 		
+
+	def addReminder(self, myString):
+		self.reminderList.append(myString)
+
+	def editReminder(self, position, myString):
+		self.reminderList[position] = myString
+
+	def deleteReminder(self, position):
+		self.reminderList.pop(position)
 
 	def addLocationHelperFunction(self, newLocationName):
 		newLocationID = self.adjacency.addNewNode()
@@ -752,9 +763,20 @@ class OOT_Locations_Graph:
 		else:
 			writeString += "False\n"
             
+		writeString += "isAutosaveOn:"
+		if self.isAutosaveOn:
+			writeString += "True\n"
+		else:
+			writeString += "False\n"
+
+		writeString += "|\n"
+		for reminder in self.reminderList:
+			print(reminder + "\n")
+
+		writeString += "|\n"
 		myFile.write(writeString)
 		myFile.close()
-
+		return 0
 
 	#Constructs the OOT_Locations_Graph object from the file	
 	def readDataFromFile(self, fileName):
@@ -763,6 +785,7 @@ class OOT_Locations_Graph:
 		self.ID_to_string_dictionary = {}
 		self.adjacency.locationsList = []
 		self.adjacency.lastNodeAdded = -1
+		self.reminderList = []
 		
 		#Now attempting to open the file...
 		myFile = ""
@@ -814,11 +837,16 @@ class OOT_Locations_Graph:
 			print("Error When creating graph!")
 			return -2
 
+		indexAtRemainderStart = -1
 		#Now setting various flags and song IDs
 		for index in range(indexOfEndOfGraph + 1, len(fileLines)):
 			currLine = fileLines[index].strip()
 			if len(currLine) == 0:
 				continue
+			if currLine == "|":
+				indexAtRemainderStart = index + 1
+				break
+
 			splitLine = currLine.split(":")
 			if len(splitLine) != 2:
 				return -1
@@ -874,18 +902,42 @@ class OOT_Locations_Graph:
 				self.isDefaultSongs = myValue
 			elif myProperty == 'hasTempleOfTimeAccess':
 				self.hasTempleOfTimeAccess = myValue
+			elif myProperty == 'isAutosaveOn':
+				self.isAutosaveOn = myValue
 			else:
 				return -1
+
+		for index in range(indexAtRemainderStart, len(fileLines)):
+			currLine = fileLines[index].strip()
+			if len(currLine) == 0:
+				continue
+			if(currLine == "|"):
+				break
+			self.reminderList.append(currLine)
 
 		#Success!
 		return 0
 
 
 
+	def isExemptFromArea(self, myKey):
+		sourceLocationName = myKey
+		if sourceLocationName == 'Sacred_Forest_Meadow_Minuet_Pedestal' or sourceLocationName == 'DMC_Bolero_Pedestal' or sourceLocationName == 'Lake_Hylia_Serenade_Pedestal' or sourceLocationName == 'Graveyard_Nocturne_Pedestal' or sourceLocationName == 'Desert_Colossus_Requiem_Pedestal' or sourceLocationName == 'Temple_Of_Time_Prelude_Pedestal' or sourceLocationName == 'Kak_On_Roof' or sourceLocationName == 'Hyrule_Field_Owl_Dropoff':
+			return True
+		return False
 
 
 
-			
+	def allLocationsInAreaSet(self, areaNameString):
+		validFlag = False
+		for myKey in self.entrances_locations_dictionary:
+			if self.entrances_locations_dictionary[myKey] == areaNameString:
+				validFlag = True
+				if self.adjacency.getAllNonZeroDestinationsOfSource(self.string_to_ID_dictionary[myKey]) == [] and not self.isExemptFromArea(myKey):
+					return False
+		if validFlag == False:
+			print("ERROR: Invalid name passed into allLocationsInAreaSet(). Area name was: " + str(areaNameString))
+		return True			
 
 def addLinkTestFunc(myGraph, location1, location2):
 	print("Adding a link between " + location1 + " and " + location2 + "...")
@@ -949,7 +1001,6 @@ def pathFindingTester(graph, loc1, loc2, exclusionStringList, specialExclusionSt
 		for nodeID in myPath[0]:
 			print(graph.ID_to_string_dictionary[nodeID] + " -->  ", end="")
 	print("\n")
-
 
 
 if __name__ == '__main__':
