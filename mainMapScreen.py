@@ -155,6 +155,7 @@ class mainMapScreen():
 
 		self.screenBusy = True
 		if rectangleID == self.mainCanvas.hyruleFieldRect:
+			self.loadSubLocation("Hyrule_Field")
 			print("\t...Hyrule Field clicked!")
 		elif rectangleID == self.mainCanvas.lonLonRect:
 			self.loadSubLocation("Lon_Lon_Ranch")
@@ -178,6 +179,7 @@ class mainMapScreen():
 			print("\t...Market Entryway clicked!")
 			self.loadSubLocation("Market_Entryway")
 		elif rectangleID == self.mainCanvas.marketRect:
+			self.loadSubLocation("Market")
 			print("\t...Market clicked!")
 		elif rectangleID == self.mainCanvas.ToTEntrywayRect:
 			print("\t...Temple of Time Entryway clicked!")
@@ -185,27 +187,33 @@ class mainMapScreen():
 		elif rectangleID == self.mainCanvas.ToTRect:
 			self.loadSubLocation("Temple_Of_Time")
 		elif rectangleID == self.mainCanvas.castleRect:
+			self.loadSubLocation("Castle")
 			print("\t...Hyrule Castle clicked!")
 		elif rectangleID == self.mainCanvas.ganonRect:
 			print("\t...Ganon's Castle clicked!")
-			self.screenBusy = False
-			return
+			self.loadSubLocation("Ganons_Castle")
 		elif rectangleID == self.mainCanvas.kokiriRect:
 			print("\t...Kokiri Forest clicked!")
 			self.loadSubLocation("Kokiri_Forest")
 		elif rectangleID == self.mainCanvas.lostWoodsRect:
+			self.loadSubLocation("Lost_Woods")
 			print("\t...Lost Woods clicked!")
 		elif rectangleID == self.mainCanvas.sacredForestRect:
+			self.loadSubLocation("Sacred_Forest_Meadow")
 			print("\t...Sacred Forest Meadow clicked!")
 		elif rectangleID == self.mainCanvas.kakarikoRect:
 			print("\t...Kakariko Village clicked!")
 		elif rectangleID == self.mainCanvas.zorasRiverRect:
+			self.loadSubLocation("Zoras_River")
 			print("\t...Zora's River clicked!")
 		elif rectangleID == self.mainCanvas.graveyardRect:
+			self.loadSubLocation("Graveyard")
 			print("\t...Graveyard clicked!")
 		elif rectangleID == self.mainCanvas.zorasDomainRect:
+			self.loadSubLocation("Zoras_Domain")
 			print("\t...Zora's Domain clicked!")
 		elif rectangleID == self.mainCanvas.zorasFountainRect:
+			self.loadSubLocation("Zoras_Fountain")
 			print("\t...Zora's Fountain clicked!")
 		elif rectangleID == self.mainCanvas.dmtRect:
 			print("\t..Death Mountain Trail clicked!")

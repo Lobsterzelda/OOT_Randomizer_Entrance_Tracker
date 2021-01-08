@@ -46,13 +46,43 @@ class subLocationCanvas(Canvas):
 		elif subLocationName == 'Market_Entryway':
 			self.openImageFunction('./Market_Entryway.png')
 			self.openMarketEntryway()
-
 		elif subLocationName == 'Gerudos_Fortress':
 			self.openImageFunction('./Gerudos_Fortress.png')
 			self.openGerudosFortress()
 		elif subLocationName == 'Gerudo_Valley':
 			self.openImageFunction('./Gerudo_Valley.png')
 			self.openGerudoValley()
+		elif subLocationName == 'Ganons_Castle':
+			self.openImageFunction('./Ganons_Castle.png')
+			self.openGanonsCastle()
+		elif subLocationName == 'Castle':
+			self.openImageFunction('./Castle.png')
+			self.openCastle()
+		elif subLocationName == 'Lost_Woods':
+			self.openImageFunction('./Lost_Woods.png')
+			self.openLostWoods()
+		elif subLocationName == 'Sacred_Forest_Meadow':
+			self.openImageFunction('./Sacred_Forest_Meadow.png')
+			self.openSacredForestMeadow()
+		elif subLocationName == 'Hyrule_Field':
+			self.openImageFunction('./Hyrule_Field.png')
+			self.openHyruleField()
+		elif subLocationName == 'Market':
+			self.openImageFunction('./Market.png')
+			self.openMarket()
+		elif subLocationName == 'Zoras_River':
+			self.openImageFunction('./Zoras_River.png')
+			self.openZorasRiver()
+		elif subLocationName == 'Zoras_Domain':
+			self.openImageFunction('./Zoras_Domain.png')
+			self.openZorasDomain()
+		elif subLocationName == 'Zoras_Fountain':
+			self.openImageFunction('./Zoras_Fountain.png')
+			self.openZorasFountain()		
+		elif subLocationName == 'Graveyard':
+			self.openImageFunction('./Graveyard.png')
+			self.openGraveyard()
+
 
 		else:
 			print("in subLocationCanvas(), I haven't implemented the location " + subLocationName + " yet!")
@@ -82,13 +112,57 @@ class subLocationCanvas(Canvas):
 		self.setupRectangles(kokiriLocationsListing)
 
 	def openLostWoods(self):
-		pass
+		woodsListing = [
+		['Lost_Woods_To_Kokiri_And_Lost', 574, 438],
+		['Lost_Woods_Bridge_To_Kokiri', 275, 624],
+		['Lost_Woods_Bridge_To_Hyrule_Field', 107, 624],
+		['Lost_Woods_To_Goron_City', 825, 230],
+		['Lost_Woods_To_Zoras_River', 1330, 285],
+		['Lost_Woods_To_Sacred_Forest_Meadow', 828, 35],
+		['Lost_Woods_To_Grotto_By_GC', 868, 260],
+		['Lost_Woods_To_Grotto_By_Sacred_Forest_Meadow', 755, 50],
+		['Lost_Woods_To_Deku_Stage_Grotto', 605, 180],
+		['Deku_Stage_Grotto_Interior', 395, 155]	
+		]
+		self.setupRectangles(woodsListing)
 
 	def openSacredForestMeadow(self):
-		pass
+		sacredListing = [
+		['Sacred_Forest_Meadow_Minuet_Pedestal', 760, 99],
+		['Sacred_Forest_Meadow_To_Forest_Temple', 760, 20],
+		['Sacred_Forest_Meadow_To_SoS_Grotto', 820, 135],
+		['Sacred_Forest_Meadow_To_LW', 708, 700],
+		['Sacred_Forest_Meadow_To_Rainbow_Grotto', 695, 645],
+		['Sacred_Forest_Meadow_To_Central_Grotto', 772, 443],
+		['Rainbow_Grotto_Interior', 504, 680]
+		]
+		self.setupRectangles(sacredListing)
 
 	def openHyruleField(self):
-		pass
+		hyruleListing = [
+		['Hyrule_Field_To_Kokiri_Forest', 1215, 405],
+		['Hyrule_Field_To_Market_Entrance', 865, 95],
+		['Hyrule_Field_To_Gerudo_Valley', 200, 373],
+		['Hyrule_Field_To_Lake_Hylia', 435, 700],
+		['Hyrule_Field_To_Kak', 1105, 84],	
+		['Hyrule_Field_To_Zoras_River', 1305, 207],
+		['Hyrule_Field_To_Lon_Lon_Ranch', 715, 315],
+		['Hyrule_Field_To_South_Open_Grotto', 555, 615],
+		['Hyrule_Field_To_Far_South_Bombable_Grotto', 500, 650],
+		['Hyrule_Field_To_South_Bombable_Rock_Grotto', 860, 520],
+		['Hyrule_Field_To_Grotto_By_Kak', 1010, 60],
+		['Hyrule_Field_To_North_West_Most_Bombable_Rock_Grotto', 565, 42],
+		['Hyrule_Field_To_North_West_Tree_Grotto', 505, 150],
+		['Hyrule_Field_To_Bombable_Rock_Grotto_By_Market', 745, 105],
+		['Hyrule_Field_Owl_Dropoff', 865, 150],
+		['Hyrule_Field_To_Grotto_By_Gerudo_Valley', 303, 340],
+		['Webbed_Skulltula_Grotto_Interior', 225, 290],
+		['Skulltula_High_On_Ceiling_Grotto_Interior', 910, 50],
+		['Underwater_Heart_Piece_Grotto_Interior', 380, 180]
+		
+		]
+		self.setupRectangles(hyruleListing)
+
 
 	def openLonLonRanch(self):
 		lonLonListing = [
@@ -104,19 +178,58 @@ class subLocationCanvas(Canvas):
 		self.setupRectangles(lonLonListing)
 
 	def openZorasRiver(self):
-		pass
+		zoraLocations = [
+		['Zoras_River_To_Hyrule_Field', 125, 733],
+		['Zoras_River_To_SoS_Grotto', 163, 335],
+		['Zoras_River_To_Bombable_Grotto', 623, 285],
+		['Zoras_River_To_Open_Grotto', 490, 396],
+		['Zoras_River_Waterfall', 1300, 64],
+		['Zoras_River_To_Lost_Woods_Shortcut', 1265, 165]
+		]
+		self.setupRectangles(zoraLocations)
 
 	def openZorasDomain(self):
-		pass
+		zoraLocations = [
+		['Zoras_Domain_To_Zoras_River', 160, 575],
+		['Zoras_Domain_To_SoS_Grotto', 315, 500],
+		['Zoras_Domain_To_Lake_Hylia_Shortcut', 520, 580],
+		['Zoras_Domain_To_Zora_Shop', 743, 650],
+		['Zoras_Domain_To_Zoras_Fountain', 680, 35],
+		['Zoras_Domain_Shop_Interior', 1250, 710]
+		]
+		self.setupRectangles(zoraLocations)
+
 	
 	def openZorasFountain(self):
-		pass
+		zoraLocations = [
+		['Zoras_Fountain_To_Zoras_Domain', 215, 425],
+		['Zoras_Fountain_To_Jabu_Jabu', 455, 347],
+		['Zoras_Fountain_To_Ice_Cavern', 750, 130],
+		['Zoras_Fountain_To_Farores_Wind', 895, 696],
+		['Zoras_Fountain_Farores_Wind_Interior', 1173, 570]
+		]
+		self.setupRectangles(zoraLocations)
 
 	def openKak(self):
 		pass
 
 	def openGraveyard(self):
-		pass
+		graveLocations = [
+		['Graveyard_To_Kak', 120, 365],
+		['Graveyard_To_Dampes_Hut', 320, 425],
+		['Graveyard_To_Shield_Grave', 380, 333],
+		['Graveyard_To_Dampes_Gravestone', 320, 214],
+		['Graveyard_To_Redead_Grave', 500, 367],
+		['Graveyard_To_Royal_Family_Suns_Song_Grave', 678, 311],
+		['Graveyard_Nocturne_Pedestal', 765, 311],
+		['Graveyard_To_Shadow_Temple', 1130, 311],
+		['Dampes_Hut_Interior', 420, 560],
+		['Dampes_Grave_Main_Entrance', 279, 685],
+		['Suns_Song_Royal_Family_Grave_Interior', 300, 70],
+		['Suns_Song_Lone_Redead_Grave_Interior', 717, 540],
+		['Grave_With_Shield_Chest_Interior', 717, 435]
+		]
+		self.setupRectangles(graveLocations)
 
 	def openDMT(self):
 		pass
@@ -136,7 +249,29 @@ class subLocationCanvas(Canvas):
 		self.setupRectangles(marketLocations)
 
 	def openMarket(self):
-		pass
+		marketLocations = [
+		['Market_To_Market_Entryway', 702, 420],
+		['Market_To_Castle', 702, 105],
+		['Market_To_Temple_Of_Time_Entryway', 900, 140],
+		['Market_To_Potion_Shop', 802, 232],
+		['Market_To_Bazaar', 802, 305],	
+		['Market_To_Bombchu_Bowling', 598, 257],
+		['Market_To_Shooting_Gallery', 645, 125],
+		['Market_To_Mask_Shop', 770, 125],
+		['Market_To_Bombchu_Shop', 400, 400],
+		['Market_To_Lens_Game', 615, 380],
+		['Market_To_Back_Alley_Useless_House', 350, 115],
+		['Bombchu_Shop_Interior', 570, 590],
+		['Market_Bazaar_Interior', 1200, 400],
+		['Market_Potion_Shop_Interior', 1200, 275],
+		['Mask_Shop_Interior', 880, 100],
+		['Market_Shooting_Gallery_Interior', 630, 22],
+		['Market_Back_Alley_Useless_House_Interior', 245, 45],
+		['Bombchu_Bowling_Interior', 550, 280],
+		['Big_Poe_House_Interior', 850, 645],
+		['Lens_Game_Interior', 1360, 165]
+		]
+		self.setupRectangles(marketLocations)
 
 	def openTempleOfTimeEntryway(self):
 		templeOfTimeLocationsListings = [
@@ -154,7 +289,26 @@ class subLocationCanvas(Canvas):
 		self.setupRectangles(templeOfTimeLocationsListings)
 
 	def openCastle(self):
-		pass
+		castleLocations = [
+		['Castle_To_Market', 488, 685],
+		['Castle_To_Dins_Fire', 1165, 374],
+		['Castle_Dins_Fire_Interior', 1120, 467],
+		['Castle_To_SoS_Grotto', 715, 191],
+		['Bombable_Wall_Skulltula_Grotto_Interior', 1050, 115]
+		]
+		self.setupRectangles(castleLocations)
+
+	def openGanonsCastle(self):
+		ganonLocations = [
+		['Castle_To_Market', 578, 727],
+		['Castle_To_Ganons_Castle', 518, 270],
+		['Castle_To_Double_Defense', 1150, 262],
+		['Castle_Double_Defense_Interior', 1155, 314]
+
+		]
+	
+		self.setupRectangles(ganonLocations)
+
 
 	def openGerudoValley(self):
 		gerudoLocations = [
@@ -167,7 +321,6 @@ class subLocationCanvas(Canvas):
 		['Gerudo_Valley_To_SoS_Grotto', 715, 200]
 		]
 		self.setupRectangles(gerudoLocations)
-		pass
 
 	def openGerudosFortress(self):
 		gerudoLocations = [
@@ -254,6 +407,6 @@ if __name__ == '__main__':
 	myBackButton.grid(row = 0, column = 0, sticky = W, padx = (10, 500))
 	myFrame = Frame(tk, relief = RIDGE, borderwidth = 1)
 	myFrame.grid(row = 1, column = 0)
-	myCanvas = subLocationCanvas(myFrame, tk, 'Gerudo_Valley')
+	myCanvas = subLocationCanvas(myFrame, tk, 'Graveyard')
 	tk.mainloop()
 

@@ -60,7 +60,7 @@ class OOT_Locations_Graph:
 		'DMC_To_Fire_Temple' : 'Death_Mountain_Crater', 
 
 		'Graveyard_To_Kak' : 'Graveyard', 'Graveyard_To_Dampes_Hut' : 'Graveyard', 'Graveyard_To_Shield_Grave' : 'Graveyard', 'Graveyard_To_Dampes_Gravestone' : 'Graveyard',
-		'Graveyard_To_Readead_Grave' : 'Graveyard', 'Graveyard_To_Royal_Family_Suns_Song_Grave' : 'Graveyard', 'Graveyard_To_Shadow_Temple' : 'Graveyard',
+		'Graveyard_To_Redead_Grave' : 'Graveyard', 'Graveyard_To_Royal_Family_Suns_Song_Grave' : 'Graveyard', 'Graveyard_To_Shadow_Temple' : 'Graveyard',
 		'Graveyard_Nocturne_Pedestal' : 'Graveyard',
 
 		'Dampes_Grave_Main_Entrance' : 'Dampes_Grave', 'Dampes_Grave_To_Windmill' : 'Dampes_Grave',
