@@ -248,11 +248,14 @@ class OOT_Locations_Graph:
 		for house in self.houseLocations:
 			self.addLocationHelperFunction(house)
 
+		self.addLocationHelperFunction("Generic_House_Interior_1")
 		#Now adding all unique grottos to the graph and dictionaries. Grottos which are useless or repeat (ex. generic chest grotto) are NOT added.
 		#A new generic grotto is added whenever the user finds a generic grotto.
 		for grotto in self.grottoLocations:
 			if grotto != 'Generic_Chest_Grotto_Interior' and grotto != 'Two_Business_Scrubs_Grotto_Interior' and grotto != 'Three_Business_Scrubs_Grotto_Interior' and grotto != 'One_Business_Scrub_Grotto_Interior' and grotto != 'Generic_Fairy_Fountain_Grotto_Interior' and grotto != 'Cow_Grotto_Interior' and grotto != 'Money_Grotto_Interior':
 				self.addLocationHelperFunction(grotto)
+			else:
+				self.addLocationHelperFunction(grotto + "_1")
 	
 		kakPotionFront = self.string_to_ID_dictionary['Kak_Potion_Shop_Front_Interior']
 		kakPotionBack = self.string_to_ID_dictionary['Kak_Potion_Shop_Back_Interior']
@@ -357,7 +360,61 @@ class OOT_Locations_Graph:
 	def getIDHelperFunc(self, name):
 		return self.string_to_ID_dictionary[name]
 
+	
+	#Returns true if myName is a repeating/generic grotto name or generic house, and false otherwise
+	def isGenGrotto(self, myName):
+		if 'Generic_Chest_Grotto_Interior' in myName or 'Two_Business_Scrubs_Grotto_Interior' in myName or 'Three_Business_Scrubs_Grotto_Interior' in myName or 'One_Business_Scrub_Grotto_Interior' in myName or 'Generic_Fairy_Fountain_Grotto_Interior' in myName or 'Cow_Grotto_Interior' in myName or 'Money_Grotto_Interior' in myName or 'Generic_House_Interior' in myName:
+			return True
+		else:
+			return False
+
+
+	#Takes as input a generic grotto/house name, and outputs true if this is the last of its kind
+	def isLastGenGrotto(self, myName):
+		stringList = myName.split("_")
+		grotNum = int(stringList[len(stringList) - 1])
+		i = len(myName) - 1
+		baseString = ""
+		while i > 0:
+			if myName[i] == '_':
+				baseString = myName[0:i]
+				break
+			i -= 1
+		if baseString == "":
+			return
+
+		for location in self.string_to_ID_dictionary:
+			if baseString in location:
+				stringList = location.split("_")
+				newNum = int(stringList[len(stringList) - 1])
+				if newNum > grotNum:
+					return False
+		return True
+
+
+	#Adds a new grotto/house of the same type as myName to the dictionaries (assumes myName is the last of its kind/highest number in the dictionary)
+	def addGenGrotto(self, myName):
+		stringList = myName.split("_")
+		grotNum = int(stringList[len(stringList) - 1])
+		i = len(myName) - 1
+		baseString = ""
+		while i > 0:
+			if myName[i] == '_':
+				baseString = myName[0:i]
+				break
+			i -= 1
+		if baseString == "":
+			return
+	
+		self.addLocationHelperFunction(baseString + "_" + str(grotNum + 1))
+
+
 	def addLinkBetweenStrings(self, string1, string2):
+		if self.isGenGrotto(string1) and self.isLastGenGrotto(string1):
+			self.addGenGrotto(string1)
+		if self.isGenGrotto(string2) and self.isLastGenGrotto(string2):
+			self.addGenGrotto(string2)
+
 		return self.addLink(self.getIDHelperFunc(string1), self.getIDHelperFunc(string2))		
 
 	#Returns the id of the closest node in the unvisited array, and pops it from the unvisited array
@@ -1050,7 +1107,9 @@ if __name__ == '__main__':
 	OOTGraph.setSongFound('Requiem')
 	OOTGraph.setSongFound('Minuet')
 	OOTGraph.hasTempleOfTimeAccess = True	
-
+	OOTGraph.addLinkBetweenStrings("Generic_Chest_Grotto_Interior_1", "Kokiri_To_SoS_Grotto")
+	OOTGraph.printAdjacencyListWithNames()
+	"""
 	pathFindingTester(OOTGraph, "Links_House_Interior", "Fire_Temple", [], [], True)
 	pathFindingTester(OOTGraph, "Zoras_River", "Lake_Hylia", [], [], True)
 	pathFindingTester(OOTGraph, "Temple_Of_Time_Front_Interior", "Mask_Shop_Interior", [], [], True)
@@ -1066,3 +1125,4 @@ if __name__ == '__main__':
 	if errorCode != 0:
 		print("Error number " + str(errorCode) + " occured when reading from file!")
 	newGraph.writeDataToFile("myTestFile2.txt")
+	"""

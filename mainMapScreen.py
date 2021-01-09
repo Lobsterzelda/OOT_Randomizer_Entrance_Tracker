@@ -8,6 +8,7 @@ except:
 from mapSelectionCanvas import *
 from overworldCanvas import *
 from subLocationCanvas import *
+from locationListCanvas import *
 
 def donothing():
 	pass
@@ -62,14 +63,15 @@ class mainMapScreen():
 	
 		self.gui.title("Select Map!")
 		self.mainCancelButton = None
+		self.myBackButton = None
 		self.screenBusy = False
 		self.topFrame = Frame(self.gui, relief = RIDGE, borderwidth = 0, bg = '#FFFFE0')
 		self.topFrame.grid(row = 0, column = 0, sticky = N+S+E+W)
 		self.mainFrame = Frame(self.gui, relief = RAISED, borderwidth = 1)
 		self.mainFrame.grid(row = 1, column = 0)
 		self.mainCanvas = mapSelectionCanvas(self.mainFrame, self)
-		self.mainCanvas.tag_bind("overworldButton", "<Button-1>", self.overworldLoad)
-		self.mainCanvas.tag_bind("overworldText", "<Button-1>", self.overworldLoad)
+		self.setMainScreenTagBindings()
+
 		self.titleText = Label(self.topFrame, text = "Exploration Mode!", fg = "red", font = "Heveltica 32 bold", bg = '#FFFFE0')
 		self.titleText.grid(row = 0, column = 1, sticky = N)
 		self.topFrame.grid_rowconfigure(0, weight = 1)
@@ -83,19 +85,66 @@ class mainMapScreen():
 		exit(0)
 
 
-	def goBackFromOverworld(self):
+	def setMainScreenTagBindings(self):
+		self.mainCanvas.tag_bind("overworldButton", "<Button-1>", self.overworldLoad)
+		self.mainCanvas.tag_bind("overworldText", "<Button-1>", self.overworldLoad)
+		self.mainCanvas.tag_bind("dungeonButton", "<Button-1>", self.dungeonLoad)
+		self.mainCanvas.tag_bind("dungeonText", "<Button-1>", self.dungeonLoad)
+		self.mainCanvas.tag_bind("grottosButton", "<Button-1>", self.grottoLoad)
+		self.mainCanvas.tag_bind("grottosText", "<Button-1>", self.grottoLoad)
+		self.mainCanvas.tag_bind("housesButton", "<Button-1>", self.houseLoad)
+		self.mainCanvas.tag_bind("housesText", "<Button-1>", self.houseLoad)
+
+
+	def dungeonLoad(self, args):
+		self.genericLoad("Dungeon")
+
+	def grottoLoad(self, args):
+		self.genericLoad("Grotto")
+
+	def houseLoad(self, args):
+		self.genericLoad("House")
+
+
+	def genericLoad(self, locType):
 		if self.screenBusy:
 			return
 		self.mainCanvas.destroy()
+		self.mainFrame.destroy()
+		self.mainFrame = Frame(self.gui, relief = RAISED, borderwidth = 1)
+		self.mainFrame.grid(row = 1, column = 0)
+		self.mainCanvas = locationListCanvas(self.mainFrame, self, locType)
+		for rectID in self.mainCanvas.rect_ID_to_string_dictionary:
+			self.mainCanvas.tag_bind(rectID, "<Button-1>", lambda x, name = self.mainCanvas.rect_ID_to_string_dictionary[rectID]: self.loadInfoRectangle(name))
+	
+		for textID in self.mainCanvas.text_ID_to_string_dictionary:
+			self.mainCanvas.tag_bind(textID, "<Button-1>", lambda x, name = self.mainCanvas.text_ID_to_string_dictionary[textID]: self.loadInfoRectangle(name))	
+		if self.myBackButton is not None:
+			self.myBackButton.grid_forget()
+		self.myBackButton = Button(self.topFrame, text = "Back", bg = "blue", fg = "white", command = self.goBackFromOverworld)
+		self.myBackButton.grid(row = 0, column = 0, sticky = W, padx = (10, 0))
+
+
+
+
+
+	def goBackFromOverworld(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		self.mainCanvas.destroy()
 		self.mainCanvas = mapSelectionCanvas(self.mainFrame, self)
 		self.myBackButton.grid_forget()
-		self.mainCanvas.tag_bind("overworldButton", "<Button-1>", self.overworldLoad)
-		self.mainCanvas.tag_bind("overworldText", "<Button-1>", self.overworldLoad)
+		self.setMainScreenTagBindings()
+		self.screenBusy = False
 
 	def overworldLoad(self, args):
 		if self.screenBusy == False:
 			self.screenBusy = True
 			self.mainCanvas.destroy()
+			self.mainFrame.destroy()
+			self.mainFrame = Frame(self.gui, relief = RAISED, borderwidth = 1)
+			self.mainFrame.grid(row = 1, column = 0)
 			self.mainCanvas = overworldCanvas(self.mainFrame, self)
 			self.gui.title("Select a Location!")
 			
@@ -137,6 +186,9 @@ class mainMapScreen():
 	def loadSubLocation(self, locName):
 		self.currentSubLocation = locName
 		self.mainCanvas.destroy()
+		self.mainFrame.destroy()
+		self.mainFrame = Frame(self.gui, relief = RAISED, borderwidth = 1)
+		self.mainFrame.grid(row = 1, column = 0)
 		self.mainCanvas = subLocationCanvas(self.mainFrame, self, locName)
 		self.myBackButton.grid_forget()
 		self.myBackButton = Button(self.topFrame, text = "Back", bg = "blue", fg = "white", command = self.goBackFromSubLocation)
@@ -202,6 +254,7 @@ class mainMapScreen():
 			self.loadSubLocation("Sacred_Forest_Meadow")
 			print("\t...Sacred Forest Meadow clicked!")
 		elif rectangleID == self.mainCanvas.kakarikoRect:
+			self.loadSubLocation("Kakariko")
 			print("\t...Kakariko Village clicked!")
 		elif rectangleID == self.mainCanvas.zorasRiverRect:
 			self.loadSubLocation("Zoras_River")
@@ -216,10 +269,13 @@ class mainMapScreen():
 			self.loadSubLocation("Zoras_Fountain")
 			print("\t...Zora's Fountain clicked!")
 		elif rectangleID == self.mainCanvas.dmtRect:
+			self.loadSubLocation("Death_Mountain_Trail")
 			print("\t..Death Mountain Trail clicked!")
 		elif rectangleID == self.mainCanvas.goronCityRect:
+			self.loadSubLocation("Goron_City")
 			print("\t...Goron City clicked!")
 		elif rectangleID == self.mainCanvas.dmcRect:
+			self.loadSubLocation("Death_Mountain_Crater")
 			print("\t...Death Mountain Crater clicked!")
 
 		else:
@@ -300,6 +356,7 @@ class mainMapScreen():
 		self.closeWindow()
 		if self.OOT_Graph.isAutosaveOn:
 			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+	
 		self.changeModes('Explore')
 
 
@@ -366,8 +423,15 @@ class mainMapScreen():
 		elif self.mainCanvas.type == 'subLocationCanvas':
 			self.loadSubLocation(self.currentSubLocation)
 			return
-
-
+		elif self.mainCanvas.type == 'Dungeon':
+			self.screenBusy = False
+			self.dungeonLoad(None)
+		elif self.mainCanvas.type == 'Grotto':
+			self.screenBusy = False
+			self.grottoLoad(None)
+		elif self.mainCanvas.type == 'House':
+			self.screenBusy = False
+			self.houseLoad(None)
 
 
 if __name__ == '__main__':

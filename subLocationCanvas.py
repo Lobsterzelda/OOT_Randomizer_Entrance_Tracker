@@ -82,7 +82,18 @@ class subLocationCanvas(Canvas):
 		elif subLocationName == 'Graveyard':
 			self.openImageFunction('./Graveyard.png')
 			self.openGraveyard()
-
+		elif subLocationName == 'Death_Mountain_Crater':
+			self.openImageFunction('./Death_Mountain_Crater.png')
+			self.openDMC()
+		elif subLocationName == 'Goron_City':
+			self.openImageFunction('./Goron_City.png')
+			self.openGoronCity()
+		elif subLocationName == 'Death_Mountain_Trail':
+			self.openImageFunction('./Death_Mountain_Trail.png')
+			self.openDMT()
+		elif subLocationName == 'Kakariko':
+			self.openImageFunction('./Kakariko.png')
+			self.openKak()
 
 		else:
 			print("in subLocationCanvas(), I haven't implemented the location " + subLocationName + " yet!")
@@ -211,6 +222,37 @@ class subLocationCanvas(Canvas):
 		self.setupRectangles(zoraLocations)
 
 	def openKak(self):
+		kakLocations = [
+		['Kak_To_Hyrule_Field', 300, 464],
+		['Kak_To_DMT_Gate', 863, 105],
+		['Kak_To_Graveyard', 1225, 510],
+		['Kak_To_Redead_Grotto', 760, 375],
+		['Kak_To_Grotto_By_Potion_Shop', 1005, 280],
+		['Kak_To_Bottom_Of_The_Well', 1015, 418],
+		['Kak_To_Windmill', 1100, 390],
+		['Kak_To_Malon_House', 855, 342],
+		['Kak_To_Bazaar', 830, 225],
+		['Kak_To_Potion_Shop_Front', 893, 240],
+		['Kak_To_Potion_Shop_Back', 980, 240],
+		['Kak_To_Odd_Medicine_Building', 1012, 320],
+		['Kak_To_Archery', 930, 420],
+		['Kak_To_House_Of_Skulltula', 810, 455],
+		['Kak_To_Cow_In_House_Front_Door', 790, 550],
+		['Kak_To_Cow_In_House_Cage', 915, 550],
+		['Kak_On_Roof', 855, 530],
+		['Kak_Malon_House_Interior', 270, 287],
+		['Kak_Bazaar_Interior', 440, 80],
+		['Kak_Potion_Shop_Front_Interior', 1235, 60],
+		['Kak_Potion_Shop_Back_Interior', 1160, 40],
+		['Kak_Archery_Interior', 1160, 118],
+		['Kak_Odd_Medicine_Interior', 1295, 175],
+		['Windmill_Front_Door', 1254, 318],
+		['Kak_House_Of_Skulltula_Interior', 585, 600],
+		['Kak_Cow_In_House_Cage_Interior', 960, 705],
+		['Kak_Cow_In_House_Front_Door_Interior', 715, 705],
+		['Kak_Redead_Grotto_Interior', 350, 570]
+		]
+		self.setupRectangles(kakLocations)
 		pass
 
 	def openGraveyard(self):
@@ -232,13 +274,42 @@ class subLocationCanvas(Canvas):
 		self.setupRectangles(graveLocations)
 
 	def openDMT(self):
-		pass
+		dmtLocations = [
+		['DMT_To_Kak', 570, 680],
+		['DMT_To_Dodongos_Cavern', 510, 450],
+		['DMT_To_Goron_City', 965, 400],
+		['DMT_To_SoS_Grotto', 1008, 445],
+		['DMT_To_Bombable_Grotto', 638, 460],
+		['DMT_To_Magic', 700, 170],
+		['DMT_To_Death_Mountain_Crater', 775, 120],
+		['DMT_Magic_Interior', 575, 100],
+		['DMT_Owl', 760, 205]
+		]
+		self.setupRectangles(dmtLocations)
 
 	def openGoronCity(self):
-		pass
+		goronLocations = [
+		['Goron_City_To_Death_Mountain_Trail', 675, 710],
+		['Goron_City_To_Lost_Woods', 863, 700],
+		['Goron_City_To_Goron_Shop', 530, 400],
+		['Goron_Shop_Interior', 400, 160],
+		['Goron_City_Darunia_Statue', 689, 50],
+		['Goron_City_To_Lava_Grotto', 1067, 147]
+		]
+		self.setupRectangles(goronLocations)
 
 	def openDMC(self):
-		pass
+		dmcLocations = [
+		['DMC_Bolero_Pedestal', 677, 300],
+		['DMC_To_Darunias_Room', 245, 308],
+		['DMC_To_Death_Mountain_Trail', 470, 585],
+		['DMC_To_Bombable_Grotto', 685, 540],
+		['DMC_To_Hammer_Grotto', 272, 215],
+		['DMC_To_Double_Magic', 328, 450],
+		['DMC_To_Fire_Temple', 680, 46],
+		['DMC_Double_Magic_Interior', 292, 518]
+		]
+		self.setupRectangles(dmcLocations)
 
 	def openMarketEntryway(self):
 		marketLocations = [
@@ -407,6 +478,6 @@ if __name__ == '__main__':
 	myBackButton.grid(row = 0, column = 0, sticky = W, padx = (10, 500))
 	myFrame = Frame(tk, relief = RIDGE, borderwidth = 1)
 	myFrame.grid(row = 1, column = 0)
-	myCanvas = subLocationCanvas(myFrame, tk, 'Graveyard')
+	myCanvas = subLocationCanvas(myFrame, tk, 'Kakariko')
 	tk.mainloop()
 
