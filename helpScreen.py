@@ -22,7 +22,7 @@ class helpScreen:
 		self.mainCanvas.config(yscrollcommand = self.verticalScroll.set)
 		self.verticalScroll.config(command = self.mainCanvas.yview)
 
-		self.mainCanvas.configure(scrollregion = (0, 0, 5000, 4035))
+		self.mainCanvas.configure(scrollregion = (0, 0, 5000, 4065))
 
 		lastHeight = 10
 		self.mainCanvas.create_text(670, lastHeight, text = 'Help:', fill = 'red', font = 'Heveltica 32 bold', anchor = NW) 
@@ -204,9 +204,9 @@ class helpScreen:
 		self.mainCanvas.create_text(headerWidth, lastHeight, fill = "purple", font = "Heveltica 24 bold", anchor = NW, text = "Miscellaneous Notes:")
 		lastHeight += 40
 
-		self.mainCanvas.create_text(mainTextWidth, lastHeight, fill = "black", width = 1000, font = "Heveltica 16", anchor = NW, text = "If autosave is turned off, then to save your file, you must click on File -> Save. Note that after saving, you should wait at least one second before closing the program in order to avoid any accidental data loss. Similarly, if autosave is enabled, then whenever you change a property of the seed, a song you own, or add or delete a connection between locations, you should wait at least a second after you make the change before closing the program in order to avoid accidentally corrupting your save file. In the File menu, there are also options to create a new randomizer, and to load a different randomizer file as well. And with that, this help menu is complete! Thats all for now, folks! However, if you have any questions or discover any bugs in this program, feel free to contact me at tersaderwaslink@gmail.com")
+		self.mainCanvas.create_text(mainTextWidth, lastHeight, fill = "black", width = 1000, font = "Heveltica 16", anchor = NW, text = "If autosave is turned off, then to save your file, you must click on File -> Save. Note that after saving, you should wait at least one second before closing the program in order to avoid any accidental data loss. Similarly, if autosave is enabled, then whenever you change a property of the seed, a song you own, or add or delete a connection between locations, you should wait at least a second after you make the change before closing the program in order to avoid accidentally corrupting your save file. In the File menu, there are also options to create a new randomizer, and to load a different randomizer file as well. One last thing - sometimes, you may find yourself clicking on rectangles on the screen and finding that nothing happens! However, this is not a bug. What has probably happened is that you have a window open somewhere in the background such as an Info Rectangle for a location, the Song Tracker, the Age Menu, or the View Properties Menu. Any one of these windows/screens will block any other windows from opening, and will also block all activity on any other window until the window is shut. As such, before you think that there is a bug, make sure that you don't have a hidden info rectangle open somewhere in the background (and if you do have one, you can simply close it to continue using the program). And with that, this help menu is complete! Thats all for now, folks! However, if you have any questions or discover any bugs in this program, feel free to contact me at tersaderwaslink@gmail.com")
 
-		lastHeight += 260
+		lastHeight += 290
 		self.mainCanvas.create_text(mainTextWidth + 190, lastHeight, fill = "red", font = "Heveltica 32 bold", anchor = NW, text = "Lobsterzelda's OOT Entrance Randomizer Tracker V. 1.0")
 
 
