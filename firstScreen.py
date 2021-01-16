@@ -9,6 +9,7 @@ from tkinter import *
 from tkinter.filedialog import *
 from tkinter import messagebox
 from setupRandomizerScreen import *
+from helpScreen import *
 
 try:
 	from tkmacosx import *
@@ -45,7 +46,7 @@ class firstScreen:
 		menuBar.add_cascade(label = "File", menu = fileMenu)
 
 		helpMenu = Menu(menuBar)
-		helpMenu.add_command(label = "Help", command = donothing)
+		helpMenu.add_command(label = "Help", command = self.loadHelp)
 		menuBar.add_cascade(label = "Help", menu = helpMenu)
 		
 		self.mainText = Label(self.gui, text="Welcome to Lobsterzelda's OOT Entrance Randomizer Tracker!\nPlease select whether you would like to create a new randomizer or load a randomizer you have already created!\nNote: you can use the help option in the menu to answer any questions you have about this app", font = "Times 20 bold")
@@ -55,7 +56,7 @@ class firstScreen:
 		self.newButton = Button(self.gui, text = "New Randomizer", activebackground = "red", highlightbackground = "red", font = ("Heveltica", 30, "bold"), bg = "blue", fg = "white", command = self.newRandomizerFunction)
 		self.newButton.pack(side = LEFT, expand = True, fill = BOTH, padx = (10,100), pady = (10,350))
 		self.loadButton = Button(self.gui, text = "Load Randomizer", highlightbackground = "red", activebackground = "red", font = ("Heveltica", 30, "bold"), bg = "blue", fg = "white", command = self.loadRandomizerFunction)
-		self.loadButton.pack(side = RIGHT, expand = True, fill = BOTH, padx = (0,10), pady = (10, 350))
+		self.loadButton.pack(side = RIGHT, expand = True, fill = BOTH, padx = (0,30), pady = (10, 350))
 
 
 		self.newButton.bind("<Enter>", lambda x: self.changeRed(self.newButton))
@@ -66,6 +67,9 @@ class firstScreen:
 
 		self.gui.protocol("WM_DELETE_WINDOW", self.exitProgram)
 		self.gui.mainloop()
+
+	def loadHelp(self):
+		helpScreen(self)
 
 	def changeBlue(self, button):
 		button.config(background = "blue")
@@ -116,7 +120,6 @@ class firstScreen:
 		if self.popUpLoaded == False:
 			self.popUpLoaded = True
 			self.customizeScreen = setupRandomizerScreen(self)
-			print("At end of newRandomizerFunction")
 			if self.parent.readyForMainMapScreen == True:
 				self.parent.OOT_Graph = self.OOT_Graph
 				self.parent.fileName = self.fileName

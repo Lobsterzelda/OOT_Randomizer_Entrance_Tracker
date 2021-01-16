@@ -24,6 +24,7 @@ class OOT_Locations_Graph:
 		self.isDefaultStartPoints = defaultStarts
 		self.isDefaultSongs = defaultSongs
 		self.isAutosaveOn = autoSave
+		self.isChild = True
 		self.reminderList = []
 
 		self.entrances_locations_dictionary = {
@@ -541,6 +542,45 @@ class OOT_Locations_Graph:
 			print("Error: Song name in setSongFound() function was " + str(songName) + ". The only valid options were Minuet, Bolero, Serenade, Nocturne, Requiem & Prelude.")
 
 
+	#Returns true if user has the song specified by songName in their inventory, and false otherwise
+	def userHasSong(self, songName):
+		if songName == 'Minuet':
+			return self.hasMinuet
+		elif songName == 'Bolero':
+			return self.hasBolero
+		elif songName == 'Serenade':
+			return self.hasSerenade
+		elif songName == 'Nocturne':
+			return self.hasNocturne
+		elif songName == 'Requiem':
+			return self.hasRequiem
+		elif songName == 'Prelude':
+			return self.hasPrelude
+		else:
+			print("Error: SongName of " + songName + " was invalid! in userHasSong()")
+			exit(0)
+			return False
+
+	#Returns the location of the specified warp song
+	def getSongLocation(self, songName):
+		if songName == 'Minuet':
+			return self.minuetID
+		elif songName == 'Bolero':
+			return self.boleroID
+		elif songName == 'Serenade':
+			return self.serenadeID
+		elif songName == 'Nocturne':
+			return self.nocturneID
+		elif songName == 'Requiem':
+			return self.requiemID
+		elif songName == 'Prelude':
+			return self.preludeID
+		else:
+			print("Error: SongName of " + songName + " was invalid in getSongLocation()")
+			exit(0)
+			return -1
+
+
 	#Deletes a song from the user's inventory (if the user accidentilly said they have a song which they don't really have).
 	def removeSongFromInventory(self, songName):
 		if songName == 'Minuet':
@@ -601,7 +641,8 @@ class OOT_Locations_Graph:
 	#Additionally, the resulting path has all connections with a weight of 0 stripped out of it for readability.
 	#Essentially, this function calls the Dijkstra's algorithm function with several different starting locations to
 	#Figure out whether it is faster to warp somewhere or to start from where we are
-	def fullGetShortestPathAlgorithm(self, startingID, destinationID, exclusionList, specialExclusionList, isChild):
+	def fullGetShortestPathAlgorithm(self, startingID, destinationID, exclusionList, specialExclusionList, isChild = None):
+		isChild = self.isChild
 		originalPath = self.findShortestPath(startingID, destinationID, exclusionList)
 
 		childSpawnPath = None
@@ -826,9 +867,16 @@ class OOT_Locations_Graph:
 		else:
 			writeString += "False\n"
 
+
+		writeString += "isChild:"
+		if self.isChild:
+			writeString += "True\n"
+		else:
+			writeString += "False\n"
+
 		writeString += "|\n"
 		for reminder in self.reminderList:
-			print(reminder + "\n")
+			writeString += (reminder + "\n")
 
 		writeString += "|\n"
 		myFile.write(writeString)
@@ -961,6 +1009,8 @@ class OOT_Locations_Graph:
 				self.hasTempleOfTimeAccess = myValue
 			elif myProperty == 'isAutosaveOn':
 				self.isAutosaveOn = myValue
+			elif myProperty == 'isChild':
+				self.isChild = myValue
 			else:
 				return -1
 

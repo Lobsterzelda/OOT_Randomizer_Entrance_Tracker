@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.filedialog import *
 try:
 	from tkmacosx import *
 except:
@@ -9,6 +10,13 @@ from mapSelectionCanvas import *
 from overworldCanvas import *
 from subLocationCanvas import *
 from locationListCanvas import *
+from newRandScreen import *
+from songScreen import *
+from viewScreen import *
+from spawnScreen import *
+from reminderScreen import *
+from shortestPathScreen import *
+from helpScreen import *
 
 def donothing():
 	pass
@@ -22,41 +30,51 @@ class mainMapScreen():
 		menuBar = Menu(self.gui)
 		self.gui.config(menu=menuBar)
 		self.newRoot = None
+		self.newRandomizerScreen = None
+		self.mySongScreen = None
+		self.myViewScreen = None
+		self.mySpawnScreen = None
+		self.myReminderScreen = None
+		self.myShortestScreen = None
+		self.pathSource = ""
+		self.pathDest = ""
+		self.spawnType = ""
 		self.lastLocation = ""
 		self.sourceLocation = ""
 		self.destinationLocation = ""
 		self.currentSubLocation = ""
+		self.currentSong = ""
 
 		fileMenu = Menu(menuBar)
-		fileMenu.add_command(label = "New Randomizer", command = donothing)
-		fileMenu.add_command(label = "Load Randomizer", command = donothing)
-		fileMenu.add_command(label = "Save", command = donothing)
+		fileMenu.add_command(label = "New Randomizer", command = self.newRando)
+		fileMenu.add_command(label = "Load Randomizer", command = self.load)
+		fileMenu.add_command(label = "Save", command = self.save)
 		fileMenu.add_separator()
-		fileMenu.add_command(label = "Exit Program", command = donothing)
+		fileMenu.add_command(label = "Exit Program", command = self.exitFunc)
 		menuBar.add_cascade(label = "File", menu = fileMenu)
 
 		songMenu = Menu(menuBar)
-		songMenu.add_command(label = "Open Song Tracker", command = donothing)
+		songMenu.add_command(label = "Open Song Tracker", command = self.openSongs)
 		menuBar.add_cascade(label = "Songs", menu = songMenu)   
         
 		ageMenu = Menu(menuBar)
-		ageMenu.add_command(label = "Open Temple Of Time Tracker", command = donothing)
+		ageMenu.add_command(label = "Set Age Spawn Points", command = self.openSpawn)
 		menuBar.add_cascade(label = "Age", menu = ageMenu)
 
 		viewMenu = Menu(menuBar)
-		viewMenu.add_command(label = "View Current Seed Properties", command = donothing)
+		viewMenu.add_command(label = "View Current Seed Properties", command = self.openView)
 		menuBar.add_cascade(label = "View", menu = viewMenu)
 
 		reminderMenu = Menu(menuBar)
-		reminderMenu.add_command(label = "Open Reminder Tracker", command = donothing)
+		reminderMenu.add_command(label = "Open Reminder Tracker", command = self.loadReminders)
 		menuBar.add_cascade(label = "Reminders", menu = reminderMenu)
 
 		navigationMenu = Menu(menuBar)
-		navigationMenu.add_command(label = "Find Shortest Path", command = donothing)
+		navigationMenu.add_command(label = "Find Shortest Path", command = self.openShortestPath)
 		menuBar.add_cascade(label = "Routing", menu = navigationMenu)
 
 		helpMenu = Menu(menuBar)
-		helpMenu.add_command(label = "Help", command = donothing)
+		helpMenu.add_command(label = "Help", command = self.openHelp)
 		menuBar.add_cascade(label = "Help", menu = helpMenu)		
 
 		self.mode = "Explore"  #mode has the value 'Explore' by default, when the user hasn't done anything. The user can select a source for a connection in this mode. Other values are 'Destination', where the user needs to select a destination to make a connection to. 'PathStart' when setting a path from the source, 'PathEnd' when selecting a destination from a source. and 'Song-X', when setting the destination for a song, where X is the name of the song, and 'childStart' and 'adultStart' modes.
@@ -77,12 +95,426 @@ class mainMapScreen():
 		self.topFrame.grid_rowconfigure(0, weight = 1)
 		self.topFrame.grid_columnconfigure(1, weight = 1)
 
-		self.gui.protocol("WM_DELETE_WINDOW", self.leaveFunc)
+		self.gui.protocol("WM_DELETE_WINDOW", self.exitFunc)
 		self.gui.mainloop()
+	
+
+	def openHelp(self):
+		helpScreen(self)
+
+	def openShortestPath(self):
+		if self.screenBusy or self.mode != 'Explore':
+			return
+		self.changeModes('PathStart')
+	
+
+	def reminderClose(self):
+		self.screenBusy = False
+		self.gui.after(25, lambda: self.myReminderScreen.gui.destroy())
+
+	def unhighlightReminders(self):
+		self.myReminderScreen.listbox.select_clear(0, END)
+
+	def loadReminders(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		self.myReminderScreen = reminderScreen(self)
+		self.myReminderScreen.gui.protocol("WM_DELETE_WINDOW", self.reminderClose)
+		self.myReminderScreen.addReminderButton.bind("<Button-1>", lambda x: self.addReminder())
+		self.myReminderScreen.deleteReminderButton.bind("<Button-1>", lambda x: self.deleteReminders())
+		self.myReminderScreen.unhighlightButton.bind("<Button-1>", lambda x: self.unhighlightReminders())
+
+	
+	def addReminder(self):
+		newRemind = self.myReminderScreen.reminderVar.get().strip()
+		if newRemind == "":
+			return
+
+		self.OOT_Graph.addReminder(newRemind)
+		self.myReminderScreen.listbox.insert(END, newRemind)
+
+		self.myReminderScreen.reminderVar.set("")
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+	
+	def deleteReminders(self):
+
+		while(len(self.myReminderScreen.listbox.curselection()) > 0):
+			nextLine = self.myReminderScreen.listbox.curselection()[0]
+			self.myReminderScreen.listbox.delete(nextLine)		
+
+
+		self.OOT_Graph.reminderList = []
+		
+		for i in range(0, self.myReminderScreen.listbox.size()):
+			newRemind = self.myReminderScreen.listbox.get(i)
+			self.OOT_Graph.addReminder(newRemind)
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
 		
 
-	def leaveFunc(self):
+	def spawnClose(self):
+		self.screenBusy = False
+		self.gui.after(25, lambda: self.mySpawnScreen.gui.destroy())
+
+	def openSpawn(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		self.mySpawnScreen = spawnScreen(self)
+		self.mySpawnScreen.gui.protocol("WM_DELETE_WINDOW", self.spawnClose)
+		self.mySpawnScreen.cancelButton.bind("<Button-1>", lambda x: self.spawnClose())
+		for element in self.mySpawnScreen.spawnList:
+			name = element[0]
+			addButton = element[1]
+			deleteButton = element[2]
+			addButton.bind("<Button-1>", lambda x, spawnLoc = name: self.setSpawnClicked(spawnLoc))
+			deleteButton.bind("<Button-1>", lambda x, spawnLoc = name: self.deleteSpawnClicked(spawnLoc))
+	
+		self.mySpawnScreen.saveButton.bind("<Button-1>", lambda x: self.spawnSave())
+
+
+
+	def deleteSpawnClicked(self, spawnLoc):
+
+		extraString = ""
+		if spawnLoc == 'Child Spawn Point:':
+			extraString = self.OOT_Graph.ID_to_string_dictionary[self.OOT_Graph.childStartID]
+			self.OOT_Graph.childStartID = -1
+		else:
+			extraString = self.OOT_Graph.ID_to_string_dictionary[self.OOT_Graph.adultStartID]
+			self.OOT_Graph.adultStartID = -1
+
+		if bool(self.mySpawnScreen.isChildVar.get()):
+			self.OOT_Graph.isChild = True
+		else:
+			self.OOT_Graph.isChild = False
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+		messagebox.showinfo("Success!", "Succesfully deleted the " + self.spawnType + " savewarp location of " + extraString)
+		self.screenBusy = False
+		self.changeModes('Explore')
+		self.spawnClose()
+
+
+	def spawnSave(self):
+		if bool(self.mySpawnScreen.isChildVar.get()):
+			self.OOT_Graph.isChild = True
+		else:
+			self.OOT_Graph.isChild = False
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+		self.spawnClose()
+
+
+	def setSpawnClicked(self, spawnLoc):
+		if spawnLoc == 'Child Spawn Point:':
+			self.spawnType = "Child"
+		else:
+			self.spawnType = "Adult"
+
+		if bool(self.mySpawnScreen.isChildVar.get()):
+			self.OOT_Graph.isChild = True
+		else:
+			self.OOT_Graph.isChild = False
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+		self.screenBusy = False
+		self.changeModes("Spawn")
+		self.spawnClose()
+
+
+	def addSpawnLoc(self):
+		if self.spawnType == 'Child':
+			self.OOT_Graph.childStartID = self.OOT_Graph.string_to_ID_dictionary[self.lastLocation]
+		else:
+			self.OOT_Graph.adultStartID = self.OOT_Graph.string_to_ID_dictionary[self.lastLocation]
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+		messagebox.showinfo("Success!", "Succesfully set the spawn point for " + self.spawnType)
+		self.screenBusy = False
+		self.changeModes('Explore')
+		self.closeWindow()
+
+	def openView(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		self.myViewScreen = viewScreen(self)
+		self.myViewScreen.gui.protocol("WM_DELETE_WINDOW", self.viewClose)
+		self.myViewScreen.cancelButton.bind("<Button-1>", lambda x: self.viewClose())
+		self.myViewScreen.saveButton.bind("<Button-1>", lambda x: self.viewSave())
+
+	
+	def viewClose(self):
+		self.screenBusy = False
+		self.gui.after(25, lambda: self.myViewScreen.gui.destroy())
+
+
+	def viewSave(self):
+		if bool(self.myViewScreen.autosaveVar.get()):
+			self.OOT_Graph.isAutosaveOn = True
+		else:
+			self.OOT_Graph.isAutosaveOn = False
+
+		if bool(self.myViewScreen.childVar.get()):
+			self.OOT_Graph.isChild = True
+		else:
+			self.OOT_Graph.isChild = False
+
+		if bool(self.myViewScreen.templeAccessVar.get()):
+			self.OOT_Graph.hasTempleOfTimeAccess = True
+		else:
+			self.OOT_Graph.hasTempleOfTimeAccess = False
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+		self.screenBusy = False
+		self.gui.after(25, lambda: self.myViewScreen.gui.destroy())			
+
+
+	def closeSong(self, arg = None):
+		self.screenBusy = False
+		self.gui.after(25, lambda: self.mySongScreen.gui.destroy())
+
+
+
+	#This helper function updates which songs the user owns
+	def updateSongsOwnedHelper(self, args = None):
+		for element in self.mySongScreen.songList:
+			songName = element[0]
+			truthVar = bool(element[1].get())
+
+			if songName == 'Minuet':
+				self.OOT_Graph.hasMinuet = truthVar
+			elif songName == 'Bolero':
+				self.OOT_Graph.hasBolero = truthVar
+			elif songName == 'Serenade':
+				self.OOT_Graph.hasSerenade = truthVar
+			elif songName == 'Nocturne':
+				self.OOT_Graph.hasNocturne = truthVar
+			elif songName == 'Requiem':
+				self.OOT_Graph.hasRequiem = truthVar
+			elif songName == 'Prelude':
+				self.OOT_Graph.hasPrelude = truthVar
+			else:
+				print("Error: Unknown song of " + songName + " encountered in updateSongsOwnedHelper()")
+				exit(0)
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+
+
+
+	#The function which opens and sets up the songs menu.
+	def openSongs(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		self.mySongScreen = songScreen(self)
+		self.mySongScreen.gui.protocol("WM_DELETE_WINDOW", self.closeSong)
+		self.mySongScreen.cancelButton.bind("<Button-1>", self.closeSong)
+		self.mySongScreen.saveButton.bind("<Button-1>", self.saveSongs)
+		if self.OOT_Graph.isDefaultSongs == True:
+			return
+
+		for element in self.mySongScreen.songList:
+			songName = element[0]
+			addButton = element[2]
+			deleteButton = element[3]
+			addButton.bind("<Button-1>", lambda rect, name = songName: self.addSongLocationClicked(name))
+			deleteButton.bind("<Button-1>", lambda rect, name = songName: self.deleteSongLocationClicked(name))
+
+	def addSongLocationClicked(self, songName):
+		self.currentSong = songName
+		self.screenBusy = False
+		self.updateSongsOwnedHelper()
+		self.changeModes('Song')
+		self.gui.after(25, lambda: self.mySongScreen.gui.destroy())
+
+	def deleteSongLocationClicked(self, songName):
+		if songName == 'Minuet':
+			self.OOT_Graph.minuetID = -1
+		elif songName == 'Bolero':
+			self.OOT_Graph.boleroID = -1
+		elif songName == 'Serenade':
+			self.OOT_Graph.serenadeID = -1
+		elif songName == 'Nocturne':
+			self.OOT_Graph.nocturneID = -1
+		elif songName == 'Requiem':
+			self.OOT_Graph.requiemID = -1
+		elif songName == 'Prelude':
+			self.OOT_Graph.preludeID = -1
+		else:
+			print("Error: unknown song named " + songName + " in deleteSongLocationClicked()")
+			exit(1)
+
+		self.updateSongsOwnedHelper()
+		
+		self.gui.after(25, lambda: self.mySongScreen.gui.destroy())
+		messagebox.showinfo("Success!", "Succesfully deleted " + songName + " destination!")
+		self.screenBusy = False
+	
+
+	#This function saves which songs the user has when they click "save changes." It also closes the song window.
+	def saveSongs(self, arg = None):
+		for element in self.mySongScreen.songList:
+			name = element[0]
+			truthValue = bool(element[1].get())
+			if name == 'Minuet':
+				self.OOT_Graph.hasMinuet = truthValue
+			elif name == 'Bolero':
+				self.OOT_Graph.hasBolero = truthValue
+			elif name == 'Serenade':
+				self.OOT_Graph.hasSerenade = truthValue
+			elif name == 'Nocturne':
+				self.OOT_Graph.hasNocturne = truthValue
+			elif name == 'Requiem':
+				self.OOT_Graph.hasRequiem = truthValue
+			elif name == 'Prelude':
+				self.OOT_Graph.hasPrelude = truthValue
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)	
+
+		self.screenBusy = False
+		self.gui.after(25, lambda: self.mySongScreen.gui.destroy())
+		
+
+	def addSongDest(self):
+		destID = self.OOT_Graph.string_to_ID_dictionary[self.lastLocation]
+
+		if self.currentSong == 'Minuet':
+			self.OOT_Graph.minuetID = destID
+		elif self.currentSong == 'Bolero':
+			self.OOT_Graph.boleroID = destID
+		elif self.currentSong == 'Serenade':
+			self.OOT_Graph.serenadeID = destID
+		elif self.currentSong == 'Nocturne':
+			self.OOT_Graph.nocturneID = destID
+		elif self.currentSong == 'Requiem':
+			self.OOT_Graph.requiemID = destID
+		elif self.currentSong == 'Prelude':
+			self.OOT_Graph.preludeID = destID
+
+		if self.OOT_Graph.isAutosaveOn:
+			self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+		messagebox.showinfo("Success!", "Succesfully set destination of " + self.currentSong)
+		self.closeWindow()
+		self.changeModes('Explore')	
+
+
+	def save(self):
+		if self.screenBusy:
+			return
+		self.OOT_Graph.writeDataToFile(self.controller.fileName)
+
+
+
+
+	def closeNewWind(self):
+		self.newRandomizerScreen.gui.destroy()
+		self.screenBusy = False
+
+	def newRando(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		self.newRandomizerScreen = newRandScreen(self)
+		self.newRandomizerScreen.gui.protocol("WM_DELETE_WINDOW", self.closeNewWind)
+		self.newRandomizerScreen.saveButton.bind("<Button-1>", self.createNewButton)
+
+
+	#This function is a helper function which creates a new Rando file when the user hits the "Create New Randomizer" button
+	def createNewButton(self, args):
+		tempFile = ""
+		tempFile = asksaveasfilename(initialdir = '.')
+		if tempFile.strip() == "":
+			return
+
+		try:
+			defaultStarts = bool(self.newRandomizerScreen.hasDefaultStartPointsVar.get())
+			defaultSongs = bool(self.newRandomizerScreen.hasDefaultWarpSongsVar.get())	
+			decoupled = bool(self.newRandomizerScreen.hasDecoupledEntrancesVar.get())
+			
+			autosaveOn = bool(self.newRandomizerScreen.autosaveOnVar.get())
+			myOOTGraph = OOT_Locations_Graph(decoupled = decoupled, defaultStarts = defaultStarts, defaultSongs = defaultSongs, autoSave = autosaveOn)
+			newFileObj = open(tempFile, "w")
+			newFileObj.close()
+			if myOOTGraph.writeDataToFile(tempFile) != 0:
+				messagebox.showerror("Error", "Error occured writing to file. Please check that you have entered in a valid file name and that you have permission to create a file in this directory", icon = "warning")
+				return
+			self.OOT_Graph = myOOTGraph
+			self.controller.OOT_Graph = myOOTGraph
+			self.controller.fileName = tempFile
+			messagebox.showinfo("Success!", "New file succesfully created!")
+			self.screenBusy = False
+			self.mainCanvas.destroy()
+			self.mainCanvas = mapSelectionCanvas(self.mainFrame, self)
+			self.setMainScreenTagBindings()	
+			self.changeModes("Explore")
+			self.gui.after(25, lambda: self.newRandomizerScreen.gui.destroy())
+		except Exception as e:
+			messagebox.showerror("Error", "Error occured writing to file. Please check that you have entered in a valid file name and that you have permission to create a file in this directory", icon = "warning")
+			print(e)
+			return
+
+	def exitFunc(self):
+		if self.screenBusy:
+			return
 		exit(0)
+
+
+	def load(self):
+		if self.screenBusy:
+			return
+		self.screenBusy = True
+		tempFileName = askopenfilename()
+		if tempFileName.strip() == "":
+			messagebox.showerror("Invalid File Name", "Invalid File Name! Please try again...")
+			self.screenBusy = False
+			return
+		tempOOTGraph = OOT_Locations_Graph(True, True, True, True)
+		try:
+			if tempOOTGraph.readDataFromFile(tempFileName) != 0:
+				messagebox.showerror("Invalid File Format", "Error: The file you selected was not properly formatted. Please try again!")
+				self.screenBusy = False
+				return
+
+			else:
+				messagebox.showinfo("Success!", "Randomzier data file succesfully launched!", icon = "info")
+				self.controller.OOT_Graph = tempOOTGraph
+				self.OOT_Graph = tempOOTGraph
+				self.controller.fileName = tempFileName
+				self.mainCanvas.destroy()
+				self.mainFrame.destroy()
+				self.mainFrame = Frame(self.gui, relief = RAISED, borderwidth = 1)
+				self.mainFrame.grid(row = 1, column = 0)
+				self.mainCanvas = mapSelectionCanvas(self.mainFrame, self)
+				self.setMainScreenTagBindings()
+				self.screenBusy = False
+				self.changeModes("Explore")
+				return
+				
+		except Exception as e:
+			messagebox.showerror("Invalid File", "Error: The file you selected was not found or could not be opened. Please check the name of the file you selected and try again.")
+			self.screenBusy = False
+			return
 
 
 	def setMainScreenTagBindings(self):
@@ -200,83 +632,58 @@ class mainMapScreen():
 
 
 	def rectangleClicked(self, rectangleID):
-		print("In rectangleClicked...")
 		if self.screenBusy == True:
-			print("Screen was busy!")
 			return
 
 		self.screenBusy = True
 		if rectangleID == self.mainCanvas.hyruleFieldRect:
 			self.loadSubLocation("Hyrule_Field")
-			print("\t...Hyrule Field clicked!")
 		elif rectangleID == self.mainCanvas.lonLonRect:
 			self.loadSubLocation("Lon_Lon_Ranch")
-			print("\t...Lon Lon Ranch clicked!")
 		elif rectangleID == self.mainCanvas.gerudoValleyRect:
 			self.loadSubLocation("Gerudo_Valley")
-			print("\t...Gerudo Valley clicked!")
 		elif rectangleID == self.mainCanvas.gerudosFortressRect:
 			self.loadSubLocation("Gerudos_Fortress")
-			print("\t...Gerudo's Fortress clicked!")
 		elif rectangleID == self.mainCanvas.hauntedWastelandRect:
 			self.loadSubLocation("Haunted_Wasteland")
-			print("\t...Haunted Wasteland clicked!")
 		elif rectangleID == self.mainCanvas.desertColossusRect:
-			print("\t...Desert Colossus clicked!")
 			self.loadSubLocation("Desert_Colossus")
 		elif rectangleID == self.mainCanvas.lakeHyliaRect:
 			self.loadSubLocation("Lake_Hylia")
-			print("\t...Lake Hylia clicked!")
 		elif rectangleID == self.mainCanvas.marketEntrywayRect:
-			print("\t...Market Entryway clicked!")
 			self.loadSubLocation("Market_Entryway")
 		elif rectangleID == self.mainCanvas.marketRect:
 			self.loadSubLocation("Market")
-			print("\t...Market clicked!")
 		elif rectangleID == self.mainCanvas.ToTEntrywayRect:
-			print("\t...Temple of Time Entryway clicked!")
 			self.loadSubLocation("Temple_Of_Time_Entryway")
 		elif rectangleID == self.mainCanvas.ToTRect:
 			self.loadSubLocation("Temple_Of_Time")
 		elif rectangleID == self.mainCanvas.castleRect:
 			self.loadSubLocation("Castle")
-			print("\t...Hyrule Castle clicked!")
 		elif rectangleID == self.mainCanvas.ganonRect:
-			print("\t...Ganon's Castle clicked!")
 			self.loadSubLocation("Ganons_Castle")
 		elif rectangleID == self.mainCanvas.kokiriRect:
-			print("\t...Kokiri Forest clicked!")
 			self.loadSubLocation("Kokiri_Forest")
 		elif rectangleID == self.mainCanvas.lostWoodsRect:
 			self.loadSubLocation("Lost_Woods")
-			print("\t...Lost Woods clicked!")
 		elif rectangleID == self.mainCanvas.sacredForestRect:
 			self.loadSubLocation("Sacred_Forest_Meadow")
-			print("\t...Sacred Forest Meadow clicked!")
 		elif rectangleID == self.mainCanvas.kakarikoRect:
 			self.loadSubLocation("Kakariko")
-			print("\t...Kakariko Village clicked!")
 		elif rectangleID == self.mainCanvas.zorasRiverRect:
 			self.loadSubLocation("Zoras_River")
-			print("\t...Zora's River clicked!")
 		elif rectangleID == self.mainCanvas.graveyardRect:
 			self.loadSubLocation("Graveyard")
-			print("\t...Graveyard clicked!")
 		elif rectangleID == self.mainCanvas.zorasDomainRect:
 			self.loadSubLocation("Zoras_Domain")
-			print("\t...Zora's Domain clicked!")
 		elif rectangleID == self.mainCanvas.zorasFountainRect:
 			self.loadSubLocation("Zoras_Fountain")
-			print("\t...Zora's Fountain clicked!")
 		elif rectangleID == self.mainCanvas.dmtRect:
 			self.loadSubLocation("Death_Mountain_Trail")
-			print("\t..Death Mountain Trail clicked!")
 		elif rectangleID == self.mainCanvas.goronCityRect:
 			self.loadSubLocation("Goron_City")
-			print("\t...Goron City clicked!")
 		elif rectangleID == self.mainCanvas.dmcRect:
 			self.loadSubLocation("Death_Mountain_Crater")
-			print("\t...Death Mountain Crater clicked!")
 
 		else:
 			print("\t...Unknown rectangle clicked!")
@@ -287,6 +694,17 @@ class mainMapScreen():
 		pass
 
 
+	def addPathStartLoc(self):
+		self.pathSource = self.lastLocation
+		self.closeWindow()
+		self.changeModes('PathEnd')
+
+	def finishPath(self):
+		self.pathDest = self.lastLocation
+		self.closeWindow()
+		self.changeModes('Explore')
+		self.myShortestScreen = shortestPathScreen(self)
+
 	def loadInfoRectangle(self, locationString):
 		if self.screenBusy:
 			return
@@ -294,7 +712,8 @@ class mainMapScreen():
 
 		self.lastLocation = locationString
 		self.newRoot = Toplevel()
-		self.newRoot.geometry('400x500')
+		self.newRoot.title('Info Rectangle')
+		self.newRoot.geometry('700x400')
 		myFontColor = "green"			
 		if self.OOT_Graph.isExemptFromArea(locationString):
 			myFontColor = "red"
@@ -311,7 +730,7 @@ class mainMapScreen():
 		sourceLabel = Label(self.newRoot, text = "Source: ", fg = "black", font = "Heveltica 16 bold")
 		sourceLabel.grid(row = 0, column = 0, sticky = W, padx = (8, 0))	
 		sourceLocLabel = Label(self.newRoot, text = locationString, fg = myFontColor, font = "Heveltica 12")
-		sourceLocLabel.grid(row = 0, column = 1)
+		sourceLocLabel.grid(row = 0, column = 1, sticky = W)
 
 		destinationLabel = Label(self.newRoot, text = "Destination: ", fg = "black", font = "Heveltica 16 bold")
 		destinationLabel.grid(row = 1, column = 0, sticky = W, padx = (8, 0))
@@ -323,11 +742,19 @@ class mainMapScreen():
 		if(self.mode == 'Explore'):
 			actionButton = Button(self.newRoot, text = "        Add\nConnection", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.addSource)
 		elif(self.mode == 'Destination'):
-			actionButton = Button(self.newRoot, text = "Finish\nConnection", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.addDestination)
+			actionButton = Button(self.newRoot, text = "      Finish\nConnection", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.addDestination)
+		elif(self.mode == 'Song'):
+			actionButton = Button(self.newRoot, text = "Set " + self.currentSong + "\nDestination", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.addSongDest)
+		elif(self.mode == 'Spawn'):
+			actionButton = Button(self.newRoot, text = "            Set " + self.spawnType + "\nSavewarp Destination", fg = "white", bg =  "blue", font = "Heveltica 16 bold", command = self.addSpawnLoc)
+		elif(self.mode == 'PathStart'):
+			actionButton = Button(self.newRoot, text = "   Select As\nStart of Path", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.addPathStartLoc)
+		elif(self.mode == 'PathEnd'):
+			actionButton = Button(self.newRoot, text = "        Select as\nDestination of Path", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.finishPath)
 
 
 		if( (self.mode == 'Explore' or self.mode == 'Destination') and destinationsList != []):
-			deleteButton = Button(self.newRoot, text = "Delete\nConnection", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.deleteConnection)
+			deleteButton = Button(self.newRoot, text = "      Delete\nConnection", fg = "white", bg = "blue", font = "Heveltica 16 bold", command = self.deleteConnection)
 			deleteButton.grid(row = 3, column = 0, sticky = W, pady = 20, padx = (8, 50)) 
 
 		actionButton.grid(row = 2, column = 0, sticky = W, pady = 50, padx = (8, 50))			
@@ -410,12 +837,49 @@ class mainMapScreen():
 			self.titleText['text'] = "Exploration Mode!"
 			self.titleText.update()
 			self.reloadCanvas()
+		elif newModeName == 'Song':
+			self.mode = newModeName
+			if self.mainCancelButton is None:
+				self.mainCancelButton = Button(self.topFrame, text = "Cancel", fg = "white", bg = "blue", command = lambda: self.changeModes('Explore'))
+			self.mainCancelButton.grid(row = 0, column = 2, padx = (0, 20))
+			self.titleText['text'] = "Select the entrance that " + self.currentSong + " takes you to"
+			self.titleText.update()
+			self.reloadCanvas()
+
+		elif newModeName == 'Spawn':
+			self.mode = newModeName
+			if self.mainCancelButton is None:
+				self.mainCancelButton = Button(self.topFrame, text = "Cancel", fg = "white", bg = "blue", command = lambda: self.changeModes('Explore'))
+
+			self.mainCancelButton.grid(row = 0, column = 2, padx = (0, 20))
+			self.titleText['text'] = "Select the savewarp location for " + self.spawnType
+			self.titleText.update()
+			self.reloadCanvas()
+
+		elif newModeName == 'PathStart':
+			self.mode = newModeName
+			if self.mainCancelButton is None:
+				self.mainCancelButton = Button(self.topFrame, text = "Cancel", fg = "white", bg = "blue", command = lambda: self.changeModes('Explore'))
+			self.mainCancelButton.grid(row = 0, column = 2, padx = (0, 20))
+			self.titleText['text'] = 'Select the start location of this path:'
+			self.titleText.update()
+			self.reloadCanvas() 
+		elif newModeName == 'PathEnd':
+			self.mode = newModeName
+			self.titleText['text'] = 'Select the destination of this path:'
+			self.titleText.update()
+			self.reloadCanvas()
+
+
+
 		else:
 			print("Error: Unknown mode: " + newModeName)		
 		self.screenBusy = False
 
 	def reloadCanvas(self):
 		if self.mainCanvas.type == 'mapSelectionCanvas':
+			if self.myBackButton is not None:
+				self.myBackButton.grid_forget()
 			return
 		elif self.mainCanvas.type == 'overworldCanvas':
 			self.screenBusy = False

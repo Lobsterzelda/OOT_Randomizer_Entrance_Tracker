@@ -73,6 +73,8 @@ class setupRandomizerScreen:
 				messagebox.showerror("Error", "Error occured writing to file. Please check that you have entered in a valid file name and that you have permission to create a file in this directory", icon = "warning")
 				print(e)
 				return
+		else:
+			return
 
 		self.root.popUpLoaded = False
 		self.root.parent.readyForMainMapScreen = True
