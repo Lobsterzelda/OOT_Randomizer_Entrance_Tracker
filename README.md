@@ -10,6 +10,11 @@ Currently, the text on the Help Screen on Windows is overlapping and hard to rea
 
 So far, all code in this project has been written by me (Lobsterzelda). However, I am open to help from any other programmers who would like to add new features (like item tracking) to this randomizer tracker!
 
+Here is a screenshot which shows what the app looks like in action:
+
+![Screenshot](https://github.com/Lobsterzelda/OOT_Randomizer_Entrance_Tracker/blob/main/Help_Images/Screenshot.png)
+
+
 Since the Help Screen can't be read on Windows, I have included it in its entirety right here!
 
 
