@@ -15,7 +15,10 @@ Here is a screenshot which shows what the app looks like in action:
 ![Screenshot](https://github.com/Lobsterzelda/OOT_Randomizer_Entrance_Tracker/blob/main/Help_Images/Screenshot.png)
 
 
-Since the Help Screen can't be read on Windows, I have included it in its entirety right here!
+
+
+Also, Since the Help Screen can't be read on Windows, I have included it in its entirety right here!
+
 
 
 ![Help 1](https://github.com/Lobsterzelda/OOT_Randomizer_Entrance_Tracker/blob/main/Help_Images/Help_1.png)
