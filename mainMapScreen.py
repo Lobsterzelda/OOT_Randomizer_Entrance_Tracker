@@ -5,6 +5,7 @@ try:
 except:
 	pass
 
+from tkinter import messagebox
 
 from mapSelectionCanvas import *
 from overworldCanvas import *
