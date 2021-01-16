@@ -6,7 +6,7 @@ To run this app, you must have python 3 installed and tkinter installed. Additio
 
 entrance_randomizer_start.py is the python script that you need to run to start the application. Once you have all of the above pre-requisite software installed, then you can run the app by going to the command line/terminal, navigating to the directory where you downloaded this Randomizer_Tracker to, and then type in python ./entrance_randomizer_start.py in order to start the application.
 
-Currently, the text on the Help Screen on Windows is overlapping and hard to read, so fixing that will be my next priority (I developed this app originally on Mac)
+Currently, the text on the Help Screen on Windows is overlapping and hard to read, so fixing that will be my next priority (I developed this app originally on Mac).
 
 So far, all code in this project has been written by me (Lobsterzelda). However, I am open to help from any other programmers who would like to add new features (like item tracking) to this randomizer tracker!
 
