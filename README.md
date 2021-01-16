@@ -2,7 +2,10 @@
 
 This is an OOT Entrance Randomizer tracker that I've spent the last month working on. I am proud to announce that I have completed the development of version 1.0 of this tracker! Now all features are implemented, and this program can be used by OOT Randomizer enthusiasts (which should no doubt make their lives much easier).
 
-To run this app, you must have python 3 installed and tkinter installed. Additionally, you also have to install PIL. Note that if you are running this program on a Mac, then you also need to install tkmacosx (otherwise, the graphics will be really messed up and distorted).
+To run this app, you must have python 3 installed and tkinter installed. Additionally, you also have to install PIL. Note that if you are running this program on a Mac, then you also need to install tkmacosx (otherwise, the graphics will be really messed up and distorted). To install PIL on Windows or Mac, you can type in the following 2 lines on the command line:
+
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade Pillow
 
 entrance_randomizer_start.py is the python script that you need to run to start the application. Once you have all of the above pre-requisite software installed, then you can run the app by going to the command line/terminal, navigating to the directory where you downloaded this Randomizer_Tracker to, and then type in python ./entrance_randomizer_start.py in order to start the application.
 
