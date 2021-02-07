@@ -82,7 +82,7 @@ class locationListCanvas(Canvas):
 		]
 		
 		for tempLocation in self.OOT_Graph.string_to_ID_dictionary:
-			if 'Generic_Chest_Grotto_Interior' in tempLocation or 'Two_Business_Scrub_Grotto_Interior' in tempLocation or 'Three_Business_Scrubs_Grotto_Interior' in tempLocation or 'One_Business_Scrub_Grotto_Interior' in tempLocation or 'Generic_Fairy_Fountain_Grotto_Interior' in tempLocation or 'Cow_Grotto_Interior' in tempLocation or 'Money_Grotto_Interior' in tempLocation:
+			if 'Generic_Chest_Grotto_Interior' in tempLocation or 'Two_Business_Scrubs_Grotto_Interior' in tempLocation or 'Three_Business_Scrubs_Grotto_Interior' in tempLocation or 'One_Business_Scrub_Grotto_Interior' in tempLocation or 'Generic_Fairy_Fountain_Grotto_Interior' in tempLocation or 'Cow_Grotto_Interior' in tempLocation or 'Money_Grotto_Interior' in tempLocation:
 				self.locationsList.append(tempLocation)
 
 		self.locationsList.sort()

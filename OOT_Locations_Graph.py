@@ -756,8 +756,8 @@ class OOT_Locations_Graph:
 
 
 	
-		if finalPathChoice is not None:
-			self.removeUselessNodesHelperFunction(finalPathChoice)
+		#if finalPathChoice is not None:
+		#	self.removeUselessNodesHelperFunction(finalPathChoice)
 
 		return finalPathChoice
 
